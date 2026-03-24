@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'ENV', defaultValue: 'prod-new', description: 'Environment folder')
+    }
+
+    environment {
+        ARM_CLIENT_ID       = credentials('azure-client-id')
+        ARM_CLIENT_SECRET   = credentials('azure-client-secret')
+        ARM_SUBSCRIPTION_ID = credentials('azure-subscription-id')
+        ARM_TENANT_ID       = credentials('azure-tenant-id')
+        TF_VAR_admin_password = credentials('vm-admin-password')
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/6267136444/Deployment-azure-environments.git'
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                dir("${params.ENV}") {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                dir("${params.ENV}") {
+                    sh 'terraform plan'
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                dir("${params.ENV}") {
+                    sh 'terraform apply -auto-approve'
+                }
+            }
+        }
+    }
+}
