@@ -57,14 +57,14 @@ resource "azurerm_network_interface" "db_nic" {
 }
 
 module "app_server" {
-  source = "git::https://github.com/6267136444/terraform-azure-modules.git//modules/virtual-machine?ref=v2.0.0"
+  source = "git::https://github.com/6267136444/MTC-Modules.git"
 
   vm_name             = "app-server"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
-  vm_size             = "Standard_D8as_v5"
+  vm_size             = "Standard_D4as_v5"
 
-  os_type = "windows"
+  os_type = "linux"
 
   admin_username = var.admin_username
   admin_password = var.admin_password
@@ -75,7 +75,7 @@ module "app_server" {
 }
 
 module "db_server" {
-  source = "git::https://github.com/6267136444/terraform-azure-modules.git//modules/virtual-machine?ref=v2.0.0"
+  source = "git::https://github.com/6267136444/MTC-Modules.git"
 
   vm_name             = "db-server"
   location            = var.location
@@ -90,6 +90,4 @@ module "db_server" {
   nic_id = azurerm_network_interface.db_nic.id
 
   data_disk_size_gb = 6144
-
-  custom_data = filebase64("mysql-install.sh")
 }
